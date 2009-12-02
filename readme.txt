@@ -16,7 +16,7 @@ SuperSlider-Excerpts automatically adds thumbnails wherever you show excerpts (a
 
 This plugin can be seen in use here:
 
-* [SuperSlider Excerpt demo](http://wp-superslider.com/2009/superslider-excerpt-demo "SuperSlider Excerpt demo")
+* [SuperSlider Excerpt demo](http://wp-superslider.com/category/plugin-news "SuperSlider Excerpt demo")
 
 **Support**
 
