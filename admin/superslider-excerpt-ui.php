@@ -296,7 +296,7 @@ jQuery(document).ready(function(){
 		 
 	</li>
 	  <li style="border-bottom:1px solid #cdcdcd; padding: 6px 0px 8px 0px;">
-	   <span class="setting-description"><?php _e('If you want to have custom sized excerpt thumbnails, select excerpt above and turn the make thumb on. The SuperSlider-Excerpt plugin can create additional excerpt thumbnails. This happens upon image upload. So to create minithumbs for previously uploaded images you would need to install the <a href="http://wordpress.org/extend/plugins/regenerate-thumbnails/" >Regenerate thumnails plugin</a>.',$excerpt_domain); ?></span><br />
+	   <span class="setting-description"><?php _e('If you want to have custom sized excerpt thumbnails, select excerpt from Thumbnail size above and turn the make thumb on. The SuperSlider-Excerpt plugin can create additional excerpt thumbnails. This happens upon image upload. So to create excerpt thumbs for previously uploaded images you would need to install the <a href="http://wordpress.org/extend/plugins/regenerate-thumbnails/" >Regenerate thumnails plugin</a>.',$excerpt_domain); ?></span><br />
 		 <label for="op_make_thumb">
 		      <input type="checkbox" <?php if($Excerpt_newOptions['make_thumb'] == "on") echo $checked; ?>checked="" name="op_make_thumb" id="op_make_thumb" />
 		      <?php _e('Make thumbnail. '); ?></label>	
