@@ -288,7 +288,7 @@ jQuery(document).ready(function(){
 		 <span class="setting-description"><?php _e(' Which image size to use in your excerpt. ',$excerpt_domain); ?></span>
 		 
 	  </li>
-	  <li>
+	  <li style="border-bottom:1px solid #cdcdcd; padding: 6px 0px 8px 0px;">
 		 <label for="op_metaThumb"><?php _e('Post thumbnail via custom field'); ?>:
 		 <input type="text" class="span-text" name="op_metaThumb" id="op_metaThumb" size="30" maxlength="300"
 		 value="<?php echo ($Excerpt_newOptions['metaThumb']); ?>" /></label> 
