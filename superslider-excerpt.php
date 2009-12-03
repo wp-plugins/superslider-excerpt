@@ -2,10 +2,10 @@
 /**
 Plugin Name: SuperSlider-Excerpt
 Author URI: http://wp-superslider.com
-Plugin URI: http://wp-superslider.com
+Plugin URI: http://wp-superslider.com/superslider/superslider-excerpt
 Description: Edited by Daiv.
 Author: Daiv Mowbray
-Version: 1.0
+Version: 1.1
 
 */
 
@@ -102,6 +102,7 @@ if (!class_exists('ssExcerpt')) {
 				"excerpt_class" => "",
 				"trans_type"	=> "Sine",
 				"trans_typeout" => "easeOut",
+				"metaThumb" => "thumbnail",
 				"thumb_w"  => "50",
 				"thumb_h"  => "50",
 				"thumb_crop"  => "true",
@@ -359,36 +360,49 @@ echo "the mytrans is : ".$mytrans."<br />";
     
       extract($this->ExcerptOptions);	
       
-        if ( is_single()) return;
+       if ( is_single()) return;
+       
+       if ( $morph_excerpt == 'on')
         add_action ( "wp_footer", array(&$this,"Excerpt_starter"));
         
         global $wp_query, $wpdb;
         $id = $wp_query->post->ID;
-        
-        
-			
+
+        // check first for a post 2.9 post thumb setting
 		if ( function_exists( 'get_the_post_image' )) {
-		  get_the_post_image($id, $size = $thumbsize, $attr = 'class->');
+		  
+		  get_the_post_image($id, $size = $thumbsize, $attr = ('class=>excerpt_thumb'));
 		  return;
 		}
 		
-        $attachments = get_children( array('post_parent' => $id, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image') );//, 'order' => $order, 'orderby' => $orderby
-        
-        $cat = get_the_category($id);
-        $cat = $cat[0];
-        $cat = 'cat-'.($cat->slug);
-        if ( empty($attachments) ) { $this->get_hard_coded($id, $excerpt, $cat); return;}
-    
-        if (array($attachments)) $attachment = array_pop($attachments);
-    
-        $id = $attachment->ID;		
-    
-        if ( is_feed() ) {
-                $output = "\n";
-                
-                    $output .= wp_get_attachment_link($id, $size = $thumbsize, true) . "\n";
-                return $output;
+        // check for a meta key of thumbnail
+		if ( function_exists( 'get_post_meta' )) {
+            
+            $metaSrc = get_post_meta($id, $metaThumb, true);
+            
         }
+        
+        // no meta source lets check for attachments
+        if ( $metaSrc == '' ) {
+            $attachments = get_children( array('post_parent' => $id, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image') );
+            
+            $cat = get_the_category($id);
+            $cat = $cat[0];
+            $cat = 'cat-'.($cat->slug);
+            
+            // there are no attachments, go get a hard code
+            if ( empty($attachments)) { $this->get_hard_coded($id, $excerpt, $cat); return;}
+        
+            if (array($attachments)) $attachment = array_pop($attachments);
+        
+            $id = $attachment->ID;		
+        
+            if ( is_feed() ) {
+                    $output = "\n";
+                    
+                        $output .= wp_get_attachment_link($id, $size = $thumbsize, true) . "\n";
+                    return $output;
+            }
     
             $my_parent = ($attachment->post_parent);
             $parent_link = get_permalink($my_parent);
@@ -401,7 +415,17 @@ echo "the mytrans is : ".$mytrans."<br />";
             $output =  '<a '.$linkto.$a_rel .' class="'.$a_class.'" title="'.$attachment->post_title.' :: '.$attachment->post_excerpt.'" >';
             $output .= '<img id="slide-'.$id.'" src="'.$image[0].'" class="excerpt_thumb '.$excerpt_class.' '.$cat.' img1" alt="'.$attachment->post_content.'" width="'.$image[1].'" height="'.$image[2].'" /></a>';
         
-         return $output.'<p>'.do_shortcode($excerpt).'</p>';
+         return $output.'<p>'.do_shortcode($excerpt).'</p>';         
+         
+         } else {
+           
+           // there was a meta key of thumbnail so lets return it now
+            $image = '<a href="'.get_permalink($id).'">';
+            $image .= '<img src="'.$metaSrc.' " class="excerpt_thumb '.$excerpt_class.' '.$cat.'" alt="excerpt thumb" />';
+            $image .= '</a><p>'.do_shortcode($excerpt).'</p>';
+        
+            return $image;
+         }
 
     }
     
@@ -451,13 +475,24 @@ echo "the mytrans is : ".$mytrans."<br />";
                 
             $img2 = preg_replace('/(.+)-\d+x\d+(.+)/', '$1-'.$mysize.'$2', $img1);              
 
-            $file2 = realpath(".")."/".substr($img2,stripos($img2,"wp-content"));
+//echo "The img2 is: ".$img2."<br />";
+//echo "The content dir is: ".ABSPATH."<br />";
+            
+            $file3 = substr($img2,stripos($img2,"wp-content"));
+
+//echo "The file3 is: ".$file3."<br />";
+
+
+            $file2 = ABSPATH.substr($img2,stripos($img2,"wp-content"));
+ 
+// echo "The file2 is: ".$file2."<br />";
  
             if (file_exists($file2)) {                
                echo '<a href="'.get_permalink($id).'">
                <img src="'.$img2.'" '.$rel.' class="excerpt_thumb '.$excerpt_class.' img1b" width="'.$mythumb_w.'" height=" '.$mythumb_h.'" alt="thumb" title="view post" /></a><p>'.do_shortcode($excerpt).'</p>';//return do_shortcode($output);
                 return;
             } else {
+                
                 $this->Excerpt_default_image($excerpt, $mythumb_w, $mythumb_h, $cat);
             }
  
@@ -482,16 +517,21 @@ echo "the mytrans is : ".$mytrans."<br />";
                 $default_image_path = WP_CONTENT_URL.'/plugin-data/superslider/ssExcerpt/excerpt-thumbs/'; 
             }
         $default_image = $default_image_path.$cat.'.jpg';
-        
+
+//echo"the default_image is a category : ".$default_image."<br />";        
+
         $image = '<a href="'.get_permalink($id).'">';
 
-        if (file_exists(realpath(".")."/".substr($default_image,stripos($default_image,"wp-content")))) {
-            
+        if (file_exists(ABSPATH."/".substr($default_image,stripos($default_image,"wp-content")))) {
+//echo " and the image is here <br />";            
             $image .= '<img src="'.$default_image.' "  '.$rel.' width="'.$mythumb_w.'" height="'.$mythumb_h.'" class="excerpt_thumb '.$excerpt_class.' '.$cat.' img3" alt="excerpt thumb" />';
 
         } else {
             $n = mt_rand(1, $num_ran);
             $image .= '<img src="'.$default_image_path.'random-image-'.$n.'.jpg"  '.$rel.' width="'.$mythumb_w.'" height="'.$mythumb_h.'" class="excerpt_thumb '.$excerpt_class.' '.$cat.' img4" alt="excerpt thumb" />';
+
+// echo 'the image is now random: '.$default_image_path.'random-image-'.$n.'.jpg<br />';  
+
         }
         
         $image .= '</a><p>'.do_shortcode($excerpt).'</p>';
@@ -501,12 +541,18 @@ echo "the mytrans is : ".$mytrans."<br />";
     }
 
     function load_Excerpt(){
+        
+        extract($this->ExcerptOptions);	
+        
        if (!is_admin()){
-            //if ( $morph_excerpt == 'on'){  
-             add_action ( 'wp_print_styles', array(&$this,'Excerpt_add_css' ));
+            if ($css_load != 'off' ) { //&& $excerpt_css == 'on'
+                add_action ( 'wp_print_styles', array(&$this,'Excerpt_add_css' ));
+             }
+            if ( $morph_excerpt == 'on'){  
+             
              add_action ( 'wp_print_scripts', array(&$this,'Excerpt_add_javascript' ));
              add_action ( "wp_footer", array(&$this,"Excerpt_starter"));
-           // }
+            }
          add_filter ( 'get_the_excerpt', array(&$this,'thumbnail_excerpts' ));
         }
     }

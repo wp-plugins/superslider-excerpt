@@ -4,20 +4,27 @@ Donate link: http://wp-superslider.com
 Tags: post_thumb, excerpts, thumbnails, morph, animation, mootools, javascript 
 Requires at least: 2.6
 Tested up to: 2.9
-Stable tag: 1.0
+Stable tag: 1.1
 
 SuperSlider-Excerpts automatically adds thumbnails wherever you show excerpts (archive page, feed...). 
 
 == Description ==
 
-SuperSlider-Excerpts automatically adds thumbnails wherever you show excerpts (archive page, feed... etc). Mouseover image will then Morph its properties, (controlled with css) You can pre-define the automatic creation of excerpt sized excerpt-nails.(New image size created upon image upload) 
+SuperSlider-Excerpts automatically adds thumbnails wherever you show excerpts (archive page, feed... etc). Mouseover image will then Morph its properties, (controlled with css) You can pre-define the automatic creation of excerpt sized excerpt-nails.(New image size created, upon image upload).
 
 Order of thumbnail search
- * Adds the new 2.9 post_thumb option to your post screen, if used, this image will be used. 
- * If your post / page has attached images  it will grab the first image and use that as part of your excerpt. 
- * If your page or post has an image embedded this plugin will grab the thumbnail from the first image.   
- * If your post has no image, this plugin will pull a category defined image, if you have added one. 
- * And lastly if still there is no image for the post, a random image will be presented.
+ 
+* Adds the new 2.9 post_thumb option to your post screen, if used, this image will be used. 
+
+* If your post / page has a meta_tag of thumbnail, it will grab the thumbnail and use that as part of your excerpt.
+
+* If your post / page has attached images  it will grab the first image and use that as part of your excerpt. 
+
+* If your page or post has an image embedded this plugin will grab the thumbnail from the first image.   
+
+* If your post has no image, this plugin will pull a category defined image, if you have added one. 
+
+* And lastly if still there is no image for the post, a random image will be presented.(Selects from as many as you define in options)
 
 **Demos**
 
@@ -55,6 +62,10 @@ Create your own graphic and animation theme based on one of these provided.
 
 == Changelog ==
 
+1.1 [DEC 3, 2009]
+
+- Added check for custom field thumbnails
+- Fixed a couple of small bugs
 
 1.0 [DEC 2, 2009]
 - first release

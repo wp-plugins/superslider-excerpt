@@ -39,6 +39,7 @@ $excerpt_domain = 'superslider-excerpt';
 				"excerpt_class" => "",
 				"trans_type"	=> "Sine",
 				"trans_typeout" => "easeOut",
+				"metaThumb" => "thumbnail",
 				"thumb_w"  => "50",
 				"thumb_h"  => "50",
 				"thumb_crop"  => "true",
@@ -63,12 +64,12 @@ $excerpt_domain = 'superslider-excerpt';
 				'load_moo'		=> $_POST['op_load_moo'],
 				'css_load'		=> $_POST['op_css_load'],
 				'css_theme'		=> $_POST["op_css_theme"],
-				'morph_excerpt'		=> $_POST["op_morph_excerpt"],
+				'morph_excerpt'	=> $_POST["op_morph_excerpt"],
 				//'opacity'		=> $_POST["op_overlayOpacity"],
 				'resize_dur'	=> $_POST["op_resize_duration"],
 				'trans_type'	=> $_POST["op_trans_type"],
 				'trans_typeout'	=> $_POST["op_trans_typeout"],
-				
+				'metaThumb'	=> $_POST["op_metaThumb"],
 				'excerpt_class'	=> $_POST["op_excerpt_class"],
 				'thumb_w'	=> $_POST["op_thumb_w"],
 				'thumb_h'	=> $_POST["op_thumb_h"],
@@ -287,6 +288,13 @@ jQuery(document).ready(function(){
 		 <span class="setting-description"><?php _e(' Which image size to use in your excerpt. ',$excerpt_domain); ?></span>
 		 
 	  </li>
+	  <li>
+		 <label for="op_metaThumb"><?php _e('Post thumbnail via custom field'); ?>:
+		 <input type="text" class="span-text" name="op_metaThumb" id="op_metaThumb" size="30" maxlength="300"
+		 value="<?php echo ($Excerpt_newOptions['metaThumb']); ?>" /></label> 
+		 <br /><span class="setting-description"><?php _e(' Add the name of your previously used custom field, If you have used custom fields to add a thumbnail to your posts.',$excerpt_domain); ?></span>
+		 
+	</li>
 	  <li style="border-bottom:1px solid #cdcdcd; padding: 6px 0px 8px 0px;">
 	   <span class="setting-description"><?php _e('If you want to have custom sized excerpt thumbnails, select excerpt above and turn the make thumb on. The SuperSlider-Excerpt plugin can create additional excerpt thumbnails. This happens upon image upload. So to create minithumbs for previously uploaded images you would need to install the <a href="http://wordpress.org/extend/plugins/regenerate-thumbnails/" >Regenerate thumnails plugin</a>.',$excerpt_domain); ?></span><br />
 		 <label for="op_make_thumb">
