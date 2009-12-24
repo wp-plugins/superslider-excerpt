@@ -18,7 +18,7 @@ Version: 1.0
 	margin: 10px;
 	background-image: url(excerpt_image_bg.png);
 	background-color: #464646;
-	background-repeat: no-repeat;
+	background-repeat: repeat-y;
 	background-position: -30px 0px;
 }
 .excerpt_thumb_active{

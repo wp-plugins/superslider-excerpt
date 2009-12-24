@@ -4,7 +4,7 @@ Donate link: http://wp-superslider.com
 Tags: post_thumb, excerpts, thumbnails, morph, animation, mootools, javascript 
 Requires at least: 2.6
 Tested up to: 2.9
-Stable tag: 1.1
+Stable tag: 1.2
 
 SuperSlider-Excerpts automatically adds thumbnails wherever you show excerpts (archive page, feed...). 
 
@@ -14,7 +14,7 @@ SuperSlider-Excerpts automatically adds thumbnails wherever you show excerpts (a
 
 Order of thumbnail search
  
-* Adds the new 2.9 post_thumb option to your post screen, if used, this image will be used. 
+* If your post / page has the new 2.9 post_thumb option on your post screen, if used, this image will be used. 
 
 * If your post / page has a meta_tag of thumbnail, it will grab the thumbnail and use that as part of your excerpt.
 
@@ -61,6 +61,11 @@ Create your own graphic and animation theme based on one of these provided.
 * custom
 
 == Changelog ==
+
+1.2 [DEC 24, 2009]
+
+- Added new 2.9 post_thumbnail check
+
 
 1.1 [DEC 3, 2009]
 
