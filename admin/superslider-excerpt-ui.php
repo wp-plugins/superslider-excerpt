@@ -42,15 +42,20 @@ $excerpt_domain = 'superslider-excerpt';
 				"metaThumb" => "thumbnail",
 				"thumb_w"  => "50",
 				"thumb_h"  => "50",
-				"thumb_crop"  => "true",
+				"thumb_crop"  => "on",
 				"thumbsize"     =>  "thumbnail",
 				"num_ran"     => "4",
+				"exlinkto"   =>  "parent",
+				"ex_pop_size"   =>  "large",
 				"make_thumb"    =>  "on"
 				);
 
-			update_option($this->optionsName, $excerpt_OldOptions);
-				
-			echo '<div id="message" class="updated fade"><p><strong>' . __( 'excerpt Default Options reloaded.', $excerpt_domain) . '</strong></p></div>';
+			update_option('ssExcerpt_options', $excerpt_OldOptions);
+			update_option('excerpt_size_w', $excerpt_OldOptions[thumb_w] );
+		    update_option('excerpt_size_h', $excerpt_OldOptions[thumb_h] );
+		    update_option('excerpt_crop', $excerpt_OldOptions[thumb_crop]);
+		    
+			echo '<div id="message" class="updated fade"><p><strong>' . __( 'SuperSlider-Excerpt Default Options reloaded.', $excerpt_domain) . '</strong></p></div>';
 			
 		}
 		elseif ($_POST['action'] == 'update' ) {
@@ -69,27 +74,29 @@ $excerpt_domain = 'superslider-excerpt';
 				'resize_dur'	=> $_POST["op_resize_duration"],
 				'trans_type'	=> $_POST["op_trans_type"],
 				'trans_typeout'	=> $_POST["op_trans_typeout"],
-				'metaThumb'	=> $_POST["op_metaThumb"],
-				'excerpt_class'	=> $_POST["op_excerpt_class"],
-				'thumb_w'	=> $_POST["op_thumb_w"],
-				'thumb_h'	=> $_POST["op_thumb_h"],
-				'thumb_crop'	=> $_POST["op_thumb_crop"],
+				'metaThumb'	       => $_POST["op_metaThumb"],
+				'excerpt_class'	   => $_POST["op_excerpt_class"],
+				'thumb_w'	       => $_POST["op_thumb_w"],
+				'thumb_h'	       => $_POST["op_thumb_h"],
+				'thumb_crop'	   => $_POST["op_thumb_crop"],
 				
 				'thumbsize'	    => $_POST["op_thumbsize"],
 				'num_ran'	    => $_POST["op_num_ran"],
+				'exlinkto'	    => $_POST["op_exlinkto"],
+				'ex_pop_size'	    => $_POST["op_ex_pop_size"],
 				'make_thumb'	=> $_POST["op_make_thumb"]
 			);	
 
-		update_option($this->optionsName, $Excerpt_newOptions);
+		update_option('ssExcerpt_options', $Excerpt_newOptions);
         
         update_option('excerpt_size_w', $Excerpt_newOptions[thumb_w] );
 		update_option('excerpt_size_h', $Excerpt_newOptions[thumb_h] );
-		if ($Excerpt_newOptions[thumb_crop] == 'true') $c = '1'; else  
+		if ($Excerpt_newOptions[thumb_crop] == 'on') $c = '1'; else  
 		$c = '0';
 		update_option('excerpt_crop', $c);
 		}	
 
-		$Excerpt_newOptions = get_option($this->optionsName);   
+		$Excerpt_newOptions = get_option('ssExcerpt_options');   
 
 	/**
 	*	Let's get some variables for multiple instances
@@ -143,13 +150,14 @@ jQuery(document).ready(function(){
   		}?>	class="ui-state-default" ><a href="#fragment-1"><span>Appearance</span></a></li>
         <li class="ui-tabs-selected"><a href="#fragment-2"><span>Transition Options</span></a></li>
         <li class="ui-state-default"><a href="#fragment-3"><span>Thumbnail options</span></a></li>
+        <li class="ui-state-default"><a href="#fragment-4"><span>Thumb Link options</span></a></li>
         <li <?php if ($this->base_over_ride != "on") { 
   		 echo '';
   		} else {
   		echo 'style="display:none;"';
-  		}?>	class="ss-state-default" ><a href="#fragment-4"><span>File storage</span></a></li>
+  		}?>	class="ss-state-default" ><a href="#fragment-5"><span>File storage</span></a></li>
     </ul>
-    <div id="fragment-1" class="ui-tabs-panel">
+    <div id="fragment-1" class="ss-tabs-panel">
  	<div <?php if ($this->base_over_ride != "on") { 
   		 echo '';
   		} else {
@@ -267,19 +275,19 @@ jQuery(document).ready(function(){
   <ul style="list-style-type: none;">       	 
 	   	  
 	   <li style="border-bottom:1px solid #cdcdcd; padding: 6px 0px 8px 0px;">
-		 <label for="op_thumbsize"><?php _e(' Thumbnail Size'); ?>: </label> 
-		 
+		 <label for="op_thumbsize"><?php _e(' Thumbnail Size'); ?>: </label>
 		  <select name="op_thumbsize" id="op_thumbsize">
-		      <option <?php if($Excerpt_newOptions['thumbsize'] == "excerpt") echo $selected; ?> id="ssexcerpt" value="excerpt"> excerpt</option>
-		     <option <?php if ($this->show_over_ride == "true") { 
+		     <option <?php
+		     if (class_exists('ssShow')) { 
   		 echo '';
   		} else {
   		echo 'style="display:none;"';
   		}?> <?php if($Excerpt_newOptions['thumbsize'] == "minithumb") echo $selected; ?> id="minithumb" value='minithumb'> minithumb</option>
+			  <option <?php if($Excerpt_newOptions['thumbsize'] == "excerpt") echo $selected; ?> id="excerpt" value="excerpt"> excerpt</option>
 			 <option <?php if($Excerpt_newOptions['thumbsize'] == "thumbnail") echo $selected; ?> id="thumbnail" value='thumbnail'> thumbnail</option>
 			 <option <?php if($Excerpt_newOptions['thumbsize'] == "medium") echo $selected; ?> id="medium" value='medium'> medium</option>
 			 
-  		    <option <?php if ($this->show_over_ride == "true") { 
+  		    <option <?php if (class_exists('ssShow')) { 
   		 echo '';
   		} else {
   		echo 'style="display:none;"';
@@ -296,22 +304,26 @@ jQuery(document).ready(function(){
 		 
 	</li>
 	  <li style="border-bottom:1px solid #cdcdcd; padding: 6px 0px 8px 0px;">
-	   <span class="setting-description"><?php _e('If you want to have custom sized excerpt thumbnails, select excerpt from Thumbnail size above and turn the make thumb on. The SuperSlider-Excerpt plugin can create additional excerpt thumbnails. This happens upon image upload. So to create excerpt thumbs for previously uploaded images you would need to install the <a href="http://wordpress.org/extend/plugins/regenerate-thumbnails/" >Regenerate thumnails plugin</a>.',$excerpt_domain); ?></span><br />
-		 <label for="op_make_thumb">
+	    <label for="op_make_thumb">
 		      <input type="checkbox" <?php if($Excerpt_newOptions['make_thumb'] == "on") echo $checked; ?>checked="" name="op_make_thumb" id="op_make_thumb" />
 		      <?php _e('Make thumbnail. '); ?></label>	
+		 <br /><span class="setting-description"><?php _e('If you want to have custom sized excerpt thumbnails, select excerpt from Thumbnail Size above and turn the make thumb on. The SuperSlider-Excerpt plugin can create additional excerpt thumbnails. This happens upon image upload. So to create excerpt thumbs for previously uploaded images you would need to install the <a href="http://wordpress.org/extend/plugins/regenerate-thumbnails/" >Regenerate thumnails plugin</a>.',$excerpt_domain); ?></span>
+		 <br />
 		 <label for="op_thumb_w"><?php _e(' Width '); ?>:
              <input type="text" class="span-text" name="op_thumb_w" id="op_thumb_w" size="3" maxlength="5"
-             value="<?php echo ($Excerpt_newOptions['thumb_w']); ?>" /> px.</label> 
+             value="<?php $size_w = get_option('excerpt_size_w'); if($size_w) { echo $size_w;} else {echo $Excerpt_newOptions[thumb_w];} ?>" /> px.</label> 
              <span class="setting-description"><?php _e('  ',$excerpt_domain); ?></span>
+		  
 		  <label for="op_thumb_h"><?php _e(' Height '); ?>:
              <input type="text" class="span-text" name="op_thumb_h" id="op_thumb_h" size="3" maxlength="5"
-             value="<?php echo ($Excerpt_newOptions['thumb_h']); ?>" /> px.</label> 
+             value="<?php $size_h = get_option('excerpt_size_h'); if($size_h) { echo $size_h;} else {echo $Excerpt_newOptions[thumb_h];} ?>" /> px.</label> 
              <span class="setting-description"><?php _e('  ',$excerpt_domain); ?></span>
-		 <label for="op_css_load1">
+		 
+		 <label for="op_thumb_crop">
 			<input type="checkbox" name="op_thumb_crop" id="op_thumb_crop"
-			<?php if($Excerpt_newOptions['thumb_crop'] == "true") echo $checked; ?> value="true" />
-			<?php _e(' Create cropped, unsellected leaves the image proportional. ',$excerpt_domain); ?></label>
+			<?php $crop = get_option('excerpt_crop') ; if($crop) echo $checked; ?> />
+			<?php _e(' Create cropped, unsellected leaves the image proportional. ',$excerpt_domain); ?></label>	  
+	    <br /><span class="setting-description"><?php _e('(These image settings are also available on the <a href="options-media.php">Media Settings page</a>).',$excerpt_domain); ?></span> 
 	  </li>
       <li style="border-bottom:1px solid #cdcdcd; padding: 6px 0px 8px 0px;">
              <label for="op_num_ran"><?php _e(' Number of Random '); ?>:
@@ -326,6 +338,48 @@ jQuery(document).ready(function(){
 </div><!-- close frag3 -->
 
 <div id="fragment-4" class="ss-tabs-panel">
+<h3 class="title">Thumb Link</h3>
+		  
+    <fieldset style="border:1px solid grey;margin:10px;padding:10px 10px 10px 30px;"><!-- options start -->
+        <legend><b><?php _e(' Personalize Link',$excerpt_domain); ?>:</b></legend>
+        <ul style="list-style-type: none;">  
+
+
+        <li style="border-bottom:1px solid #cdcdcd; padding: 6px 0px 8px 0px;">
+		 <label for="op_ex_pop_size"><?php _e(' Popover Image Size'); ?>: </label>
+		  <select name="op_ex_pop_size" id="op_ex_pop_size">
+		     <option <?php
+		     if (class_exists('ssShow')) { 
+  		 echo '';
+  		} else {
+  		echo 'style="display:none;"';
+  		}  if($Excerpt_newOptions['ex_pop_size'] == "minithumb") echo $selected; ?> id="minithumb" value='minithumb'> minithumb</option>
+			 <option <?php if($Excerpt_newOptions['ex_pop_size'] == "excerpt") echo $selected; ?> id="excerpt_pop" value="excerpt"> excerpt</option>
+			 <option <?php if($Excerpt_newOptions['ex_pop_size'] == "thumbnail") echo $selected; ?> id="thumbnail" value='thumbnail'> thumbnail</option>
+			 <option <?php if($Excerpt_newOptions['ex_pop_size'] == "medium") echo $selected; ?> id="medium" value='medium'> medium</option>
+  		     <option <?php if (class_exists('ssShow')) { 
+  		 echo '';
+  		} else {
+  		echo 'style="display:none;"';
+  		}  if($Excerpt_newOptions['ex_pop_size'] == "slideshow") echo $selected; ?> id="slideshow" value='slideshow'> slideshow</option>		   
+		 <option <?php if($Excerpt_newOptions['ex_pop_size'] == "large") echo $selected; ?> id="large" value='large'> large</option>
+		 </select>	 
+		 <span class="setting-description"><?php _e(' Which image size to use in your excerpt thumb pop over. (lightbox plugin required) ',$excerpt_domain); ?></span>
+		 
+	  </li>
+    <li style="border-bottom:1px solid #cdcdcd; padding: 6px 0px 8px 0px;">
+		 <label for="op_exlinkto"><?php _e(' Thumbnail Links to:'); ?>: </label>
+		  <select name="op_exlinkto" id="op_exlinkto">
+		  	<option <?php if($Excerpt_newOptions['exlinkto'] == "post") echo $selected; ?> value='post'> post</option>
+			<option <?php if($Excerpt_newOptions['exlinkto'] == "lightbox") echo $selected; ?> value='lightbox'> lightbox</option>
+			<option <?php if($Excerpt_newOptions['exlinkto'] == "attachment") echo $selected; ?> value='attachment'> attachment</option>
+		  </select>	
+    </li>
+        </ul>
+   </fieldset>
+</div><!-- close frag4 -->
+
+<div id="fragment-5" class="ss-tabs-panel">
 	
 	<div
 <?php if ($this->base_over_ride != "on") { 

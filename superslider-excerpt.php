@@ -5,7 +5,7 @@ Author URI: http://wp-superslider.com
 Plugin URI: http://wp-superslider.com/superslider/superslider-excerpt
 Description: SuperSlider-Excerpts automatically adds thumbnails wherever you show excerpts (archive page, feed... etc). Mouseover image will then Morph its properties, (controlled with css) You can pre-define the automatic creation of excerpt sized excerpt-nails.(New image size created, upon image upload).
 Author: Daiv Mowbray
-Version: 1.2
+Version: 1.3
 
 */
 
@@ -38,12 +38,7 @@ if (!class_exists('ssExcerpt')) {
 		var $base_over_ride;
 		var $show_over_ride;
 		var $ssBaseOpOut;
-        
-        /*
-        var $excerpt_class = 'excerpt_thumb'; // reflect the class for the thumbnail images; you can change it or use this class in you CSS file
-		var $excerpt_size = '150';
-		var $thumbsize = 'minithumb';
-		var $make_thumb = 'yes';*/
+     
 		
 		function set_Excerpt_paths()
 			{
@@ -105,9 +100,11 @@ if (!class_exists('ssExcerpt')) {
 				"metaThumb" => "thumbnail",
 				"thumb_w"  => "50",
 				"thumb_h"  => "50",
-				"thumb_crop"  => "true",
+				"thumb_crop"  => "on",
 				"thumbsize"   =>  "thumbnail",
 				"num_ran"     => "4",
+				"exlinkto"   =>  "post",
+				"ex_pop_size"   =>  "large",
 				"make_thumb"   =>  "on"
 				);
 				
@@ -139,62 +136,56 @@ if (!class_exists('ssExcerpt')) {
 			$this->set_Excerpt_paths();
 			$this->js_path = WP_CONTENT_URL . '/plugins/'. plugin_basename(dirname(__FILE__)) . '/js/';
 			
+			extract($this->ExcerptOptions);
+			
 			// lets see if the base plugin is here and get its options
 			if (class_exists('ssBase')) {
 					$this->ssBaseOpOut = get_option('ssBase_options');
-					extract($this->ssBaseOpOut);
-					$this->base_over_ride = $ss_global_over_ride;
+					//extract($this->ssBaseOpOut);
+					$this->base_over_ride = $this->ssBaseOpOut[ss_global_over_ride];	
 				}else{
 				$this->base_over_ride = 'false';
-				}
+			}
+			
 			// lets see if the ss-Show plugin is here
 			if (class_exists('ssShow')) {
 					$this->show_over_ride = 'true';
 				}else{
 				$this->show_over_ride = 'false';
 				}
-			
-			extract($this->ExcerptOptions);	
-            //$this->language_switcher();
+
+         //$this->language_switcher();
             
-            $this->js_path = WP_CONTENT_URL . '/plugins/'. plugin_basename(dirname(__FILE__)) . '/js/';
+        if ( (class_exists('ssBase')) && ($this->ssBaseOpOut['ss_global_over_ride']) ) { extract($this->ssBaseOpOut); }
+
+        if ($css_load == 'default') {
+                $cssFile = WP_PLUGIN_URL.'/superslider-excerpt/plugin-data/superslider/ssExcerpt/'.$css_theme.'/'.$css_theme.'.css';
+
+            } elseif ($css_load == 'pluginData') {
+                $cssFile = WP_CONTENT_URL.'/plugin-data/superslider/ssExcerpt/'.$css_theme.'/'.$css_theme.'.css';
+ 
+            }elseif ($css_load == 'off') {
+                $cssFile = '';
+                
+            }
+        wp_register_style('superslider_Excerpt', $cssFile);
   			
-  			wp_register_script(
-			'moocore',
-			$this->js_path.'mootools-1.2.3-core-yc.js',
-			NULL, '1.2.3');
-			
-			wp_register_script(
-			'moomore',
-			$this->js_path. 'mootools-1.2.3.1-more.js',
-			array( 'moocore' ), '1.2.3');
-					
-			wp_register_script(
-			'excerpt',
-			$this->js_path. 'excerpt.js',
-			array( 'moocore' ), '1', true);
-			
-			
-			/* added this following for WP 2.9 
-			new functions has_post_image(), get_post_image_id(), 
-			the_post_image() and get_the_post_image()
-			
-			if ( function_exists( 'add_theme_support' ) )
-	                   add_theme_support( 'post-thumbnails' );
-			*/
-			if ( $morph_excerpt == 'on') {  
-			
-			   add_action('wp_enqueue_scripts', array(&$this,'Excerpt_add_javascript'));
-			   
-			 }
-			 if ($css_load != 'off' ) { //&& $excerpt_css == 'on'
-			     add_action ( 'wp_print_styles', array(&$this,'Excerpt_add_css'));
-			   }
-			 add_filter ( 'get_the_excerpt', array(&$this,'thumbnail_excerpts' ));
-			     
-            
+        wp_register_script('moocore',$this->js_path.'mootools-1.2.3-core-yc.js',NULL, '1.2.3');
+        wp_register_script('moomore',$this->js_path. 'mootools-1.2.3.1-more.js',array( 'moocore' ), '1.2.3');
+        //wp_register_script('excerpt',$this->js_path. 'excerpt.js',array( 'moocore' ), '1', true);
+        
+
+        if ( $morph_excerpt == 'on') {  
+        
+           add_action('wp_enqueue_scripts', array(&$this,'Excerpt_add_javascript'));
            
-		}
+         }
+         if ($css_load !== 'off' ) { 
+             add_action ( 'wp_print_styles', array(&$this,'Excerpt_add_css'));
+           }
+         add_filter ( 'get_the_excerpt', array(&$this,'thumbnail_excerpts' ));
+  
+	}
 		
     /**
     * Outputs the HTML for the admin sub page.
@@ -207,14 +198,14 @@ if (!class_exists('ssExcerpt')) {
     
     function Excerpt_admin_pages(){
     
-        if (  function_exists('add_options_page') ) {
-            if (  current_user_can('manage_options') ) {
-                $plugin_page = add_options_page(__('Superslider Excerpt', 'superslider-Excerpt'),__('SuperSlider-Excerpt', 'superslider-Excerpt'), 8, 'superslider-Excerpt', array(&$this, 'Excerpt_ui'));
+        if (  function_exists('add_options_page') &&  current_user_can('manage_options') ) {
+
+                if (!class_exists('ssBase')) $plugin_page = add_options_page(__('Superslider Excerpt'),__('SuperSlider-Excerpt'), 8, 'superslider-excerpt', array(&$this, 'Excerpt_ui'));
                 add_filter('plugin_action_links', array(&$this, 'filter_plugin_excerpt'), 10, 2 );	
                 
                 add_action ( 'admin_print_styles', array(&$this,'ssbox_admin_style'));
-                add_action('admin_print_scripts-'.$plugin_page, array(&$this,'Excerpt_admin_script'));
-            }					
+                if (!class_exists('ssBase')) add_action('admin_print_scripts-'.$plugin_page, array(&$this,'Excerpt_admin_script'));
+           				
         }
     }
     function Excerpt_admin_script(){
@@ -229,7 +220,7 @@ if (!class_exists('ssExcerpt')) {
             if (  ! $this_plugin ) $this_plugin = plugin_basename(__FILE__);
 
         if (  $file == $this_plugin )
-            $settings_link = '<a href="options-general.php?page=superslider-excerpt">'.__('Settings', $Excerpt_domain).'</a>';
+            $settings_link = '<a href="admin.php?page=superslider-excerpt">'.__('Settings', $Excerpt_domain).'</a>';
             array_unshift( $links, $settings_link ); //  before other links
             return $links;
     }
@@ -240,23 +231,21 @@ if (!class_exists('ssExcerpt')) {
     */
     function Excerpt_ops_deactivation(){		
         delete_option($this->optionsName);
-    
+        delete_option('excerpt_size_w');
+		delete_option('excerpt_size_h');
+		delete_option('excerpt_crop');
     }
     
     function Excerpt_add_javascript(){
     
-       extract($this->ExcerptOpOut);
-          
-       if (!is_admin()) {				
-        if (function_exists('wp_enqueue_script')) {
-            if ($this->base_over_ride != "on") {
-                if ($load_moo == 'on'){
-                    wp_enqueue_script('moocore');		
-                    wp_enqueue_script('moomore');	
-                }
-            }
-        }      
-      //wp_enqueue_script('excerpt');	
+       $load_moo = $this->ExcerptOpOut[load_moo];
+
+//var_dump($this->ExcerptOpOut);
+//echo 'the load moo is : '. $load_moo.'.';          
+
+       if ( (!is_admin()) && ($load_moo == 'on') ) { //&& ( !is_singular() )
+        wp_enqueue_script('moocore');		
+        wp_enqueue_script('moomore');	
       }
     }
 
@@ -265,23 +254,9 @@ if (!class_exists('ssExcerpt')) {
     * Adds a link to the stylesheet to the header
     */
     function Excerpt_add_css() {
-    
-        extract($this->ExcerptOpOut);
-
-        if ( (class_exists('ssBase')) && ($this->ssBaseOpOut['ss_global_over_ride']) ) { extract($this->ssBaseOpOut); }
-
-        if ($css_load == 'default') {
-                $cssFile = WP_PLUGIN_URL.'/superslider-excerpt/plugin-data/superslider/ssExcerpt/'.$css_theme.'/'.$css_theme.'.css';
-
-            } elseif ($css_load == 'pluginData') {
-                $cssFile = WP_CONTENT_URL.'/plugin-data/superslider/ssExcerpt/'.$css_theme.'/'.$css_theme.'.css';
- 
-            }elseif ($css_load == 'off') {
-                $cssFile = '';
-                
-            }
-         if ($css_load !== 'off'){
-            wp_register_style('superslider_Excerpt', $cssFile);
+         
+         if ( ( $this->ExcerptOpOut[css_load] !== 'off' ) && ( !is_singular() ) ){
+            
             wp_enqueue_style( 'superslider_Excerpt');
           
           }
@@ -289,18 +264,12 @@ if (!class_exists('ssExcerpt')) {
     
     function Excerpt_starter(){
           
-          if ( is_single()) return;
+          if ( is_singular()) return;
           
           extract($this->ExcerptOpOut);
 
    $mytrans = "Fx.Transitions.".$trans_type.".".$trans_typeout;
-
-/*
-echo "the resize_dur is : ".$resize_dur."<br />";
-echo "the trans_type is : ".$trans_type."<br />";
-echo "the trans_typeout is : ".$trans_typeout."<br />";
-echo "the mytrans is : ".$mytrans."<br />";
- */                    
+                   
     $mystarter = "var excerpts = $$('div.entry');
     excerpts.each(function(excerpt, i) {
     var excerptImage = excerpt.getElement('.excerpt_thumb');
@@ -309,13 +278,7 @@ echo "the mytrans is : ".$mytrans."<br />";
                   link: 'cancel',
                   duration: ".$resize_dur.", 
                   transition: ".$mytrans.",
-       /*onStart: function(passes_morph_element){
-           passes_morph_element.highlight('#cdcdcd');
-	},
-        onComplete: function(passes_morph_element){
-	        passes_morph_element.highlight('#cdcdcd');
-	},*/
-	fps: 30
+                  fps: 30
     });
     excerptImage.addEvents({
         mouseenter: function() {  
@@ -342,18 +305,19 @@ echo "the mytrans is : ".$mytrans."<br />";
     function Excerpt() {
         
         $this->ExcerptOpOut = get_option($this->optionsName);
-    
-         extract($this->ExcerptOpOut);
          
         register_activation_hook(__FILE__, array(&$this,'Excerpt_init') ); //http://codex.wordpress.org/Function_Reference/register_activation_hook
         register_deactivation_hook( __FILE__, array(&$this,'Excerpt_ops_deactivation') ); //http://codex.wordpress.org/Function_Reference/register_deactivation_hook
         
         add_action ( 'init', array(&$this,'Excerpt_init' ) );			
         add_action ( 'admin_menu', array(&$this,'Excerpt_admin_pages'));
-        if ($make_thumb == 'on') {
-                add_action ( 'init', array(&$this,'Excerpt_create_thumbs' ) );
+        if ($this->ExcerptOpOut[make_thumb] == 'on') {
+                add_action ( 'admin_init', array(&$this,'Excerpt_create_thumbs' ) );
+                add_action( 'admin_init', array(&$this, 'Excerpt_create_media_page') );
         }
 
+        
+        
     }
     
     function thumbnail_excerpts($excerpt){
@@ -371,7 +335,7 @@ echo "the mytrans is : ".$mytrans."<br />";
         // check first for a post 2.9 post thumb setting
 		if ( function_exists( 'get_the_post_thumbnail' )) {
  
-		 $metaSrc2 = get_the_post_thumbnail($post_id = $id, $size = $thumbsize, $attr = array('class'=>'excerpt_thumb'));
+		 $metaSrc2 = get_the_post_thumbnail($id, $thumbsize, $attr = array('class'=>'excerpt_thumb'));
 
 		}
 
@@ -386,14 +350,17 @@ echo "the mytrans is : ".$mytrans."<br />";
         if ( $metaSrc == '' && $metaSrc2 == '') {
  
             $attachments = get_children( array('post_parent' => $id, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image') );
-
+            
+            // lets get the post category
+            $cat = get_the_category($id);
+            $cat = $cat[0];
+            $cat = 'cat-'.($cat->slug);
+            
             // there are no attachments, go get a hard code
             if ( empty($attachments)) { 
-                $cat = get_the_category($id);
-                $cat = $cat[0];
-                $cat = 'cat-'.($cat->slug);
+            
                 $this->get_hard_coded($id, $excerpt, $cat); return;
-                }
+            }
         
             if (array($attachments)) $attachment = array_pop($attachments);
         
@@ -404,17 +371,31 @@ echo "the mytrans is : ".$mytrans."<br />";
                     $output .= wp_get_attachment_link($id, $size = $thumbsize, true) . "\n";
                     return $output;
             }
-    
-            $my_parent = ($attachment->post_parent);
-            $parent_link = get_permalink($my_parent);
-            $image = wp_get_attachment_image_src($id, $size = $thumbsize);
-             
-            $linkto = 'href="'.$parent_link.'"';
-            $a_class = '';           
-            $a_rel = ' rel="lightbox:'.$cat.'"';
-        
+
+            switch($exlinkto){
+            
+            case 'lightbox':
+                $link = wp_get_attachment_image_src($id, $ex_pop_size);
+                $link = $link[0];
+                $a_rel = ' rel="lightbox:'.$cat.'"';
+                break;
+            case 'post':
+                $my_link = $attachment->post_parent;
+                $link = get_permalink($my_link);
+                $a_rel = ' rel="'.$cat.'"';
+                break;
+            case 'attachment':
+                $link = get_permalink($id);
+                $a_rel = ' rel="'.$cat.'"';
+                break;
+            }            
+  
+            $image = wp_get_attachment_image_src($id, $thumbsize);
+            $linkto = 'href="'.$link.'"';
+            $a_class = 'excerpt_thumb_link';           
+            
             $output =  '<a '.$linkto.$a_rel .' class="'.$a_class.'" title="'.$attachment->post_title.' :: '.$attachment->post_excerpt.'" >';
-            $output .= '<img id="slide-'.$id.'" src="'.$image[0].'" class="excerpt_thumb '.$excerpt_class.' '.$cat.' img1" alt="'.$attachment->post_content.'" width="'.$image[1].'" height="'.$image[2].'" /></a>';
+            $output .= '<img id="slide-'.$id.'" src="'.$image[0].'" class="excerpt_thumb '.$excerpt_class.' '.$cat.' " alt="'.$attachment->post_content.'" width="'.$image[1].'" height="'.$image[2].'" /></a>';
         
          return $output.'<p>'.do_shortcode($excerpt).'</p>';         
          
@@ -567,26 +548,60 @@ echo "the mytrans is : ".$mytrans."<br />";
 			add_filter( 'intermediate_image_sizes',  array(&$this, 'additional_thumb_sizes') );	
 	}
 	
+	 function Excerpt_create_media_page() {
+    			
+    		register_setting( 'media', ' excerpt_size_w' );
+    		register_setting( 'media', ' excerpt_size_h' );
+    		register_setting( 'media', ' excerpt_crop' );
+
+    			//add_settings_section($id, $title, $callback, $page)
+			add_settings_section('excerpt_section', 'SuperSlider-Excerpt Image Size', array(&$this, 'Excerpt_media_section'), 'media');
+			
+			add_settings_field('excerpt_size_w', 'Excerpt Width', array(&$this, 'Excerpt_media_w'), 'media', 'excerpt_section');
+			add_settings_field('excerpt_size_h', 'Excerpt Height', array(&$this, 'Excerpt_media_h'), 'media', 'excerpt_section');
+			add_settings_field('excerpt_crop', 'Excerpt Crop', array(&$this, 'Excerpt_media_crop'), 'media', 'excerpt_section');
+
+    }
+
+    function Excerpt_media_section(){
+      $section = '<span class="description">Adding (excerpt) to the standard: thumbnail, medium, and large image sizes.</span>';        
+       echo $section;
+	}
+   
+	function Excerpt_media_w(){        
+        $Excerpt_w = get_option ('excerpt_size_w');
+        echo '<label for="excerpt_size_w">Width</label><input name="excerpt_size_w" id="excerpt_size_w" type="text" value="'. $Excerpt_w.'" class="small-text" />'; 
+       
+	}
+	function  Excerpt_media_h(){
+        $Excerpt_h = get_option('excerpt_size_h');       
+        echo '<label for=" excerpt_size_h">Height</label><input name="excerpt_size_h" id="excerpt_size_h" type="text" value="'. $Excerpt_h.'" class="small-text" />
+        <br />';
+	}
+	function  Excerpt_media_crop(){
+        $Excerpt_crop = get_option('excerpt_crop');
+          echo '<input type="checkbox"'; 
+            checked('1', $Excerpt_crop);        
+          echo ' value="1" id="excerpt_crop" name="excerpt_crop">
+            <label for=" excerpt_crop">';
+            _e('Crop Excerpt image to exact dimensions (normally thumbnails are proportional)'); 
+          echo '</label>';	
+	}
+	
 	function additional_thumb_sizes( $sizes ) {
 			$sizes[] = "excerpt";
-			return $sizes;
+			return $sizes;			
 	}
 
-	function listnewimages() { 
+	function listnewimages() { 		
+		extract($this->ExcerptOptions);	
 		
 		if( FALSE == get_option('excerpt_size_w') )
 			{	
-				add_option('excerpt_size_w', '80' );
-				add_option('excerpt_size_h', '80');
-				add_option('excerpt_crop', '0');
+				add_option('excerpt_size_w', $thumb_w );
+				add_option('excerpt_size_h', $thumb_h);
+				add_option('excerpt_crop', $thumb_crop);
 			}
-			else
-			{
-				add_option('excerpt_size_w', '80');
-				add_option('excerpt_size_h', '80');
-				add_option('excerpt_crop', '0');
-			}
-				
 	}
 
     }// end class Excerpt

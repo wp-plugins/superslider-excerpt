@@ -3,8 +3,8 @@ Contributors: Daiv
 Donate link: http://wp-superslider.com
 Tags: post_thumb, excerpts, thumbnails, morph, animation, mootools, javascript 
 Requires at least: 2.6
-Tested up to: 2.9
-Stable tag: 1.2
+Tested up to: 2.9.2
+Stable tag: 1.3
 
 SuperSlider-Excerpts automatically adds thumbnails wherever you show excerpts (archive page, feed...). 
 
@@ -61,6 +61,11 @@ Create your own graphic and animation theme based on one of these provided.
 * custom
 
 == Changelog ==
+
+1.3 [march 10, 2010]
+
+- updated for WP 2.9.2
+- added as sub-menu for superslider
 
 1.2 [DEC 24, 2009]
 
