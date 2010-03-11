@@ -1,6 +1,6 @@
 === SuperSlider-Excerpt ===
 Contributors: Daiv
-Donate link: http://wp-superslider.com
+Donate link: http://wp-superslider.com/support-me/donate/
 Tags: post_thumb, excerpts, thumbnails, morph, animation, mootools, javascript 
 Requires at least: 2.6
 Tested up to: 2.9.2
@@ -10,7 +10,7 @@ SuperSlider-Excerpts automatically adds thumbnails wherever you show excerpts (a
 
 == Description ==
 
-SuperSlider-Excerpts automatically adds thumbnails wherever you show excerpts (archive page, feed... etc). Mouseover image will then Morph its properties, (controlled with css) You can pre-define the automatic creation of excerpt sized excerpt-nails.(New image size created, upon image upload).
+SuperSlider-Excerpts automatically adds thumbnails wherever you show excerpts (archive page, feed... etc). Mouseover image will then Morph its properties, (controlled with css) You can pre-define the automatic creation of excerpt sized excerpt-nails.(New image size created, upon image upload). Compatible with [Advanced Excerpt](http://wordpress.org/extend/plugins/advanced-excerpt/ "Advanced Excerpt")
 
 Order of thumbnail search
  
@@ -41,6 +41,10 @@ If you have any problems or suggestions regarding these plugins [please speak up
 1. ![SuperSlider-Excerpt options screen](screenshot-1.png "SuperSlider-Excerpt options screen")
 2. ![SuperSlider-Excerpt ](screenshot-2.png "SuperSlider-Excerpt ")
 3. ![SuperSlider-Excerpt ](screenshot-3.png "SuperSlider-Excerpt Morphed on mouseover ")
+
+== Upgrade Notice ==
+
+You may need to re-save your settings/ options when upgrading
 
 == Installation ==
 
