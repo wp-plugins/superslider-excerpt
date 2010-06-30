@@ -34,12 +34,12 @@ $excerpt_domain = 'superslider-excerpt';
 				"css_load"    => "default",
 				"css_theme"   => "default", 
 				"morph_excerpt" => "on",
-				//"opacity"     => "0.7",
+				"holder"     => ".entry",
 				"resize_dur"  => "800",
 				"excerpt_class" => "",
 				"trans_type"	=> "Sine",
 				"trans_typeout" => "easeOut",
-				"metaThumb" => "thumbnail",
+				"metaThumb" => "",
 				"thumb_w"  => "50",
 				"thumb_h"  => "50",
 				"thumb_crop"  => "on",
@@ -47,7 +47,8 @@ $excerpt_domain = 'superslider-excerpt';
 				"num_ran"     => "4",
 				"exlinkto"   =>  "parent",
 				"ex_pop_size"   =>  "large",
-				"make_thumb"    =>  "on"
+				"make_thumb"    =>  "on",
+				'delete_options' => ''
 				);
 
 			update_option('ssExcerpt_options', $excerpt_OldOptions);
@@ -70,7 +71,7 @@ $excerpt_domain = 'superslider-excerpt';
 				'css_load'		=> $_POST['op_css_load'],
 				'css_theme'		=> $_POST["op_css_theme"],
 				'morph_excerpt'	=> $_POST["op_morph_excerpt"],
-				//'opacity'		=> $_POST["op_overlayOpacity"],
+				'holder'		=> $_POST["op_holder"],
 				'resize_dur'	=> $_POST["op_resize_duration"],
 				'trans_type'	=> $_POST["op_trans_type"],
 				'trans_typeout'	=> $_POST["op_trans_typeout"],
@@ -84,7 +85,8 @@ $excerpt_domain = 'superslider-excerpt';
 				'num_ran'	    => $_POST["op_num_ran"],
 				'exlinkto'	    => $_POST["op_exlinkto"],
 				'ex_pop_size'	    => $_POST["op_ex_pop_size"],
-				'make_thumb'	=> $_POST["op_make_thumb"]
+				'make_thumb'	=> $_POST["op_make_thumb"],
+				'delete_options'	=> $_POST["op_delete_options"]
 			);	
 
 		update_option('ssExcerpt_options', $Excerpt_newOptions);
@@ -219,6 +221,13 @@ jQuery(document).ready(function(){
 		 <?php _e('Turn Morph excerpt image on'); ?></label>		 
 	  </li>
 	  
+	  <li style="border-bottom:1px solid #cdcdcd; padding: 6px 0px 8px 0px;">
+     <label for="op_holder"><?php _e(' Holder div id or class '); ?>:
+		 <input type="text" class="span-text" name="op_holder" id="op_holder" size="20" maxlength="20"
+		 value="<?php echo ($Excerpt_newOptions['holder']); ?>" /></label> 
+		 <span class="setting-description"><?php _e('   (default .entry)',$excerpt_domain); ?></span>
+	 </li>
+	 
      <li style="border-bottom:1px solid #cdcdcd; padding: 6px 0px 8px 0px;">
      <label for="op_trans_type"><?php _e(' Transition type',$excerpt_domain); ?>:   </label>  
 		 <select name="op_trans_type" id="op_trans_type">
@@ -242,12 +251,7 @@ jQuery(document).ready(function(){
 		</select><br />
 		<span class="setting-description"><?php _e(' IN is the begginning of transition. OUT is the end of transition.',$excerpt_domain); ?></span>
      </li>   
-	 <!--<li style="border-bottom:1px solid #cdcdcd; padding: 6px 0px 8px 0px;">
-     <label for="op_overlayOpacity"><?php _e(' Overlay opacity '); ?>:
-		 <input type="text" class="span-text" name="op_overlayOpacity" id="op_overlayOpacity" size="3" maxlength="3"
-		 value="<?php echo ($Excerpt_newOptions['opacity']); ?>" /></label> 
-		 <span class="setting-description"><?php _e('   (default 0.7)',$excerpt_domain); ?></span>
-	 </li>-->
+	 
       <li style="border-bottom:1px solid #cdcdcd; padding: 6px 0px 8px 0px;">
 		 <label for="op_resize_duration"><?php _e(' Transition time '); ?>:
 		 <input type="text" class="span-text" name="op_resize_duration" id="op_resize_duration" size="3" maxlength="6"
@@ -283,9 +287,9 @@ jQuery(document).ready(function(){
   		} else {
   		echo 'style="display:none;"';
   		}?> <?php if($Excerpt_newOptions['thumbsize'] == "minithumb") echo $selected; ?> id="minithumb" value='minithumb'> minithumb</option>
-			  <option <?php if($Excerpt_newOptions['thumbsize'] == "excerpt") echo $selected; ?> id="excerpt" value="excerpt"> excerpt</option>
-			 <option <?php if($Excerpt_newOptions['thumbsize'] == "thumbnail") echo $selected; ?> id="thumbnail" value='thumbnail'> thumbnail</option>
-			 <option <?php if($Excerpt_newOptions['thumbsize'] == "medium") echo $selected; ?> id="medium" value='medium'> medium</option>
+			  <option <?php if($Excerpt_newOptions['thumbsize'] == "excerpt") echo $selected; ?> id="ss_excerpt" value="excerpt"> excerpt</option>
+			 <option <?php if($Excerpt_newOptions['thumbsize'] == "thumbnail") echo $selected; ?> id="ss_thumbnail" value='thumbnail'> thumbnail</option>
+			 <option <?php if($Excerpt_newOptions['thumbsize'] == "medium") echo $selected; ?> id="ss_medium" value='medium'> medium</option>
 			 
   		    <option <?php if (class_exists('ssShow')) { 
   		 echo '';
@@ -423,7 +427,13 @@ jQuery(document).ready(function(){
 		<?php _e(' If your theme or any other plugin loads the mootools 1.2 javascript framework into your file header, you can de-activate it here.',$excerpt_domain); ?></p><p><?php _e(' Via ftp, move the folder named plugin-data from this plugin folder into your wp-content folder. This is recomended to avoid over writing any changes you make to the css files when you update this plugin.',$excerpt_domain); ?></p></td>
 	</div><!-- close frag 8 -->
 </div><!--  close tabs -->
-
+<p>
+<label for="op_delete_options">
+		      <input type="checkbox" <?php if($Excerpt_newOptions['delete_options'] == "on") echo $checked; ?> name="op_delete_options" id="op_delete_options" />
+		      <?php _e('Remove options. '); ?></label>	
+		 <br /><span class="setting-description"><?php _e('Select to have the plugin options removed from the data base upon deactivation.'); ?></span>
+		 <br />
+</p>
 <p class="submit">
 		<input type="submit" name="set_defaults" value="<?php _e(' Reload Default Options',$excerpt_domain); ?> &raquo;" />
 		<input type="submit" id="update2" class="button-primary" value="<?php _e(' Update options',$excerpt_domain); ?> &raquo;" />
