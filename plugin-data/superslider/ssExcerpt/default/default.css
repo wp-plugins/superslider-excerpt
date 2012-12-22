@@ -1,26 +1,18 @@
-/*
-Name: Sliding Excerpt with mootools 1.2
-Author: daiv mowbray
-Author URI: http://wp-superslider.com/
-Date: nov 30, 2009
-Version: 1.0
-
-	The CSS, XHTML and design is released under Creative Common License 3.0:
-	http://creativecommons.org/licenses/by-sa/3.0/
-
-*/ 
-
-.excerpt{}
-.excerpt_thumb{
-    float:left;
-    border: 1px solid #999;
-    background: #f0f0f0;
-    padding: 5px;
-    margin: 10px;
+.excerpt_wrap {
+    float: left;
+    
 }
-.excerpt_thumb_active{
-    border: 10px solid #494949;
-    background: #fff;
-    padding: 25px;
-    margin: 10px 30px 30px;
+.excerpt_thumb {
+	border: 1px solid #999;
+	background: #f0f0f0;
+	padding: 5px;
+	margin: 0px 10px !important;
+    float: left;
+}
+
+.excerpt_thumb_active {
+	border: 5px solid #494949;
+	background: #fff;
+	padding: 20px ;
+	margin: 10px 10px 30px;
 }
