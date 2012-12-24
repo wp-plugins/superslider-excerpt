@@ -439,7 +439,7 @@ if (!class_exists('ssExcerpt')) {
 
          }
          
-         return $output.do_shortcode($excerpt).'</p></div>';
+         echo $output.do_shortcode($excerpt).'</p></div>';
 
     }
     
