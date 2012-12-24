@@ -313,9 +313,13 @@ jQuery(document).ready(function ($) {
 		 <label for="op_thumbsize"><?php _e(' Thumbnail Size'); ?>: </label>
 		
 		<select name="op_thumbsize" id="op_thumbsize">   
-   <?php foreach ( $size_names as $size ) { ?>
-     
-     <option <?php if($Excerpt_newOptions['thumbsize'] == "$size") echo $selected; ?> value='<?php echo $size; ?>'><?php echo $size; ?></option>
+   <?php foreach ( $size_names as $value => $name ) { 
+     	$myScale = '';
+		$width = get_option($name.'_size_w');
+		$height = get_option($name.'_size_h'); ;
+		$myScale = ' - '.$width.' x '.$height;
+	?>
+     <option <?php if($Excerpt_newOptions['thumbsize'] == "$name") echo $selected; ?> value='<?php echo $name; ?>'><?php echo" $name $myScale"; ?></option>
      
     <?php }?>     
     </select>
@@ -383,9 +387,14 @@ jQuery(document).ready(function ($) {
 		 <label for="op_ex_pop_size"><?php _e(' Popover Image Size'); ?>: </label>
 		
 		<select name="op_ex_pop_size" id="op_ex_pop_size">   
-   <?php foreach ( $size_names as $size ) { ?>
-     
-     <option <?php if($Excerpt_newOptions['ex_pop_size'] == "$size") echo $selected; ?> id="op_thumbsize" value='<?php echo $size; ?>'><?php echo $size; ?></option>
+   <?php foreach ( $size_names as $value => $name ) { 
+     	$myScale = '';
+		$width = get_option($name.'_size_w');
+		$height = get_option($name.'_size_h'); ;
+		$myScale = ' - '.$width.' x '.$height;
+		?>
+		
+     <option <?php if($Excerpt_newOptions['ex_pop_size'] == "$name") echo $selected; ?> id="op_thumbsize" value='<?php echo $name; ?>'><?php echo "$name $myScale"; ?></option>
      
     <?php }?>     
     </select>	 
