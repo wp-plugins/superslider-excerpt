@@ -4,7 +4,7 @@ Donate link: http://superslider.daivmowbray.com/support-me/donate/
 Tags: post_thumb, excerpts, thumbnails, morph, animation, mootools, javascript 
 Requires at least: 2.6
 Tested up to: 3.5
-Stable tag: 2.1
+Stable tag: 2.2
 
 SuperSlider-Excerpts automatically pulls thumbnails from your posts and morph-animates the roll over to any css style, wherever you show excerpts (archive page, feed...) The thumbnail can be any sized image and linked to post, attachment page, or other size version of image(for light box pop overs). 
 
@@ -73,6 +73,10 @@ Create your own graphic and animation theme based on one of these provided.
 * custom
 
 == Changelog ==
+
+2.2 (2012/12/24)
+
+  * fixed image size bug
 
 2.1 (2012/12/20)
 

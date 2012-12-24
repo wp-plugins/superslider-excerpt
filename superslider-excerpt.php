@@ -5,7 +5,7 @@ Author URI: http://superslider.daivmowbray.com
 Plugin URI: http://superslider.daivmowbray.com/superslider/superslider-excerpt
 Description: SuperSlider-Excerpts automatically adds thumbnails wherever you show excerpts (archive page, feed... etc). Mouseover image will then Morph its properties, (controlled with css) You can pre-define the automatic creation of excerpt sized excerpt-nails.(New image size created, upon image upload).
 Author: Daiv Mowbray
-Version: 2.1
+Version: 2.2
 
 */
 
@@ -387,6 +387,7 @@ if (!class_exists('ssExcerpt')) {
                     $output .= wp_get_attachment_link($id, $size = $thumbsize, true) . "\n";                
                     //return $output;
                     return $output.do_shortcode($excerpt);
+
             }
 
             switch($exlinkto){
@@ -420,7 +421,7 @@ if (!class_exists('ssExcerpt')) {
             $output .= '<img id="excerpt-image-'.$id.'" src="'.$image[0].'" class="excerpt_thumb '.$excerpt_class.' '.$cat.' " alt="'.$attachment->post_title.'" width="'.$image[1].'" height="'.$image[2].'" /></a>';
          
          } else {
-   
+  
            // there was a meta key of thumbnail or post thumb so lets return it now
             $linkto = 'href="'.$link.'"';
             
@@ -430,13 +431,16 @@ if (!class_exists('ssExcerpt')) {
             if($metaSrc2 !== '') {
                 $output .= $metaSrc2;
            
-            }else{        
+            }else{   
+
                 $output .= '<img src="'.$metaSrc.'" class="excerpt_thumb '.$excerpt_class.' '.$cat.'" alt="excerpt thumb" />';
             }
            $output .= '</a>';         
+
          }
          
-         return $output.do_shortcode($excerpt).'</p></div>'; 
+         return $output.do_shortcode($excerpt).'</p></div>';
+
     }
     
     /*
@@ -447,9 +451,10 @@ if (!class_exists('ssExcerpt')) {
         extract($this->ExcerptOptions);	                  
         global $wp_query, $wpdb;        
 
+
             // check for image thumb size option based on user option of thumb size
-            $mythumb_w = get_option("excerpt_size_w");
-            $mythumb_h = get_option("excerpt_size_h");		
+            $mythumb_w = get_option($thumbsize."_size_w");
+            $mythumb_h = get_option($thumbsize."_size_h");		
             $mysize = $mythumb_w."x".$mythumb_h;
 
         //get the post content
@@ -507,12 +512,15 @@ if (!class_exists('ssExcerpt')) {
             } else {    
             	// the hard coded image can not be found on the server so.. get default.
                 $output = $this->default_image($id, $excerpt, $mythumb_w, $mythumb_h, $cat, $view, $a_rel);
+
             }  
         }
-        else{    
+        else{  
+
             $output = $this->default_image($id, $excerpt, $mythumb_w, $mythumb_h, $cat, $view, $a_rel);    
         }
         echo $output;
+
     }
     
     // no image in this post, lets get a default 
@@ -543,13 +551,15 @@ if (!class_exists('ssExcerpt')) {
             $n = mt_rand(1, $num_ran);
             if($num_ran == 0){
                 $image .= '<!-- there is no required image for this excerpt -->';
+
             } else {
- 
+
                 $image .= '<img src="'.$default_image_path.'random-image-'.$n.'.jpg"  '.$a_rel.' width="'.$mythumb_w.'" height="'.$mythumb_h.'" class="excerpt_thumb '.$excerpt_class.' '.$cat.' " alt="excerpt thumb" />';
             }
         }  
                
         $excerpt = $image.'</a>'.do_shortcode($excerpt).'</p></div><!-- this is a random image -->';
+
         echo $excerpt;
     }
 
