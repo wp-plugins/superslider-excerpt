@@ -416,7 +416,7 @@ if (!class_exists('ssExcerpt')) {
 
             $linkto = 'href="'.$link.'"';
             
-            $output = '<div class="'.$holder.' excerpt_meta2"><p>';
+            $output = '<div class="'.$holder.' excerpt_meta2">';
             $output .=  '<a '.$linkto.' '.$a_rel .' class="'.$a_class.'" title="'.$view.' " >';
             $output .= '<img id="excerpt-image-'.$id.'" src="'.$image[0].'" class="excerpt_thumb '.$excerpt_class.' '.$cat.' " alt="'.$attachment->post_title.'" width="'.$image[1].'" height="'.$image[2].'" /></a>';
          
@@ -425,7 +425,7 @@ if (!class_exists('ssExcerpt')) {
            // there was a meta key of thumbnail or post thumb so lets return it now
             $linkto = 'href="'.$link.'"';
             
-            $output = '<div class="'.$holder.' excerpt_meta1"><p>';
+            $output = '<div class="'.$holder.' excerpt_meta1">';
             $output .= '<a '.$linkto.' '.$a_rel.' class="'.$a_class.'" title="'.$view.' " >';
             
             if($metaSrc2 !== '') {
@@ -439,7 +439,7 @@ if (!class_exists('ssExcerpt')) {
 
          }
          
-         echo $output.do_shortcode($excerpt).'</p></div>';
+         echo $output.do_shortcode($excerpt).'</div>';
 
     }
     
@@ -504,10 +504,10 @@ if (!class_exists('ssExcerpt')) {
  			// check if the file is there, if it is create the output
             if (file_exists($file2)) {  
 
-               $output = '<div class="'.$holder.' excerpt_hardfile"><p>';
+               $output = '<div class="'.$holder.' excerpt_hardfile">';
                $output .= '<a href="'.get_permalink($id).'" class="'.$a_class.'" title="'.$view.' " >';
                $output .= '<img src="'.$img2.'" '.$a_rel.' class="excerpt_thumb '.$excerpt_class.' " width="'.$mythumb_w.'" height="'.$mythumb_h.'" alt="thumb" /></a>';
-               $output .= ''.do_shortcode($excerpt).'</p></div>';
+               $output .= ''.do_shortcode($excerpt).'</div>';
 
             } else {    
             	// the hard coded image can not be found on the server so.. get default.
@@ -541,7 +541,7 @@ if (!class_exists('ssExcerpt')) {
 			
         $default_image = $default_image_path.$cat.'.jpg';         
         $a_class = 'excerpt_thumb_link';
-        $image = '<div class="'.$holder.' excerpt_default"><p>';
+        $image = '<div class="'.$holder.' excerpt_default">';
         $image .= '<a href="'.get_permalink($id).'" class="'.$a_class.'" title="'.$view.' " >';
 
         if (file_exists(ABSPATH.substr($default_image,stripos($default_image,$storageDir)))) {            
@@ -557,10 +557,10 @@ if (!class_exists('ssExcerpt')) {
                 $image .= '<img src="'.$default_image_path.'random-image-'.$n.'.jpg"  '.$a_rel.' width="'.$mythumb_w.'" height="'.$mythumb_h.'" class="excerpt_thumb '.$excerpt_class.' '.$cat.' " alt="excerpt thumb" />';
             }
         }  
-               
-        $excerpt = $image.'</a>'.do_shortcode($excerpt).'</p></div><!-- this is a random image -->';
+        
+        $excerpt = $image.'</a>'.do_shortcode($excerpt).'</div><!-- this is a random image -->';
 
-        echo $excerpt;
+        return $excerpt;
     }
 
     function load_Excerpt(){        
